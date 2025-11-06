@@ -3,7 +3,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import kagglehub
-
 from kagglehub import KaggleDatasetAdapter
 
 from sklearn.model_selection import train_test_split
@@ -60,3 +59,5 @@ print(cmatrix)
 
 print(classification_report(y_test, y_pred))
 print(X_resampled.columns)
+
+
