@@ -49,8 +49,18 @@ lr.fit(X_train_scaled, y_train)
 
 y_pred = lr.predict(X_test_scaled)
 
-print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(lr.score(X_test_scaled, y_test))) 
 cmatrix = confusion_matrix(y_test, y_pred)
+labels = np.unique(y_test)
+df_cm = pd.DataFrame(cmatrix, index=labels, columns=labels)
+plt.figure(figsize=(8, 6))
+sns.heatmap(df_cm, annot=True, cmap='Blues', fmt='d')
+plt.title("Matriz de Confusión")
+plt.xlabel("Etiqueta Predicha")
+plt.ylabel("Etiqueta Verdadera")
+plt.show()
+
+print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(lr.score(X_test_scaled, y_test))) 
+
 print(cmatrix)
 
 print(classification_report(y_test, y_pred))
