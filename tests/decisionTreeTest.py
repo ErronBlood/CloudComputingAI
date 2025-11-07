@@ -8,6 +8,7 @@ from kagglehub import KaggleDatasetAdapter
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
+from sklearn import tree
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
@@ -41,13 +42,12 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(x_train)
 X_test_scaled = scaler.transform(x_test)
 
+#Mejores parametros encontrados
+dt = tree.DecisionTreeClassifier(criterion='entropy', max_depth=10, min_samples_leaf=50, splitter='best')
 
+dt.fit(X_train_scaled, y_train)
 
-lr = LogisticRegression(C=0.0001 ,max_iter=3000, penalty='l1', solver='liblinear')
-
-lr.fit(X_train_scaled, y_train)
-
-y_pred = lr.predict(X_test_scaled)
+y_pred = dt.predict(X_test_scaled)
 
 cmatrix = confusion_matrix(y_test, y_pred)
 labels = np.unique(y_test)
@@ -59,7 +59,7 @@ plt.xlabel("Etiqueta Predicha")
 plt.ylabel("Etiqueta Verdadera")
 plt.show()
 
-print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(lr.score(X_test_scaled, y_test))) 
+print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(dt.score(X_test_scaled, y_test))) 
 
 print(cmatrix)
 
