@@ -8,7 +8,7 @@ from kagglehub import KaggleDatasetAdapter
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
-from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
@@ -42,27 +42,24 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(x_train)
 X_test_scaled = scaler.transform(x_test)
 
-param_grid = {
-    'criterion': ['entropy'],  # Regularization strength
-    'splitter': ['best', 'random'],  # Regularization type
-    'max_depth': [20,23,26,29],  # Optimization algorithm  
-    'min_samples_leaf': [50,75]  # Maximum iterations
-}
+dt = RandomForestClassifier()
 
-dt = tree.DecisionTreeClassifier()
-comb = GridSearchCV(dt, param_grid, cv = 5, scoring = 'precision', n_jobs=-1)
+dt.fit(X_train_scaled, y_train)
 
-comb.fit(X_train_scaled,y_train)
+y_pred = dt.predict(X_test_scaled)
 
-print("Mejor combinacion de parametros:", comb.best_params_)
-print("Puntaje de mejores parametros: ", comb.best_score_)
-
-bestComb = comb.best_estimator_
-
-y_pred = bestComb.predict(X_test_scaled)
-
-print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(bestComb.score(X_test_scaled, y_test))) 
 cmatrix = confusion_matrix(y_test, y_pred)
+labels = np.unique(y_test)
+df_cm = pd.DataFrame(cmatrix, index=labels, columns=labels)
+plt.figure(figsize=(8, 6))
+sns.heatmap(df_cm, annot=True, cmap='Blues', fmt='d')
+plt.title("Matriz de Confusión")
+plt.xlabel("Etiqueta Predicha")
+plt.ylabel("Etiqueta Verdadera")
+plt.show()
+
+print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(dt.score(X_test_scaled, y_test))) 
+
 print(cmatrix)
 
 print(classification_report(y_test, y_pred))

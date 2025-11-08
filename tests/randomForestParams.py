@@ -8,7 +8,7 @@ from kagglehub import KaggleDatasetAdapter
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
-from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
@@ -43,14 +43,15 @@ X_train_scaled = scaler.fit_transform(x_train)
 X_test_scaled = scaler.transform(x_test)
 
 param_grid = {
-    'criterion': ['entropy'],  # Regularization strength
-    'splitter': ['best', 'random'],  # Regularization type
-    'max_depth': [20,23,26,29],  # Optimization algorithm  
-    'min_samples_leaf': [50,75]  # Maximum iterations
+    'n_estimators': [None,125,150,175],
+    'criterion': ['gini','entropy'],  # Regularization strength
+    'max_depth': [None,10,20],  # Optimization algorithm  
+    'min_samples_leaf': [25,50]  # Maximum iterations
 }
 
-dt = tree.DecisionTreeClassifier()
-comb = GridSearchCV(dt, param_grid, cv = 5, scoring = 'precision', n_jobs=-1)
+rf = RandomForestClassifier()
+
+comb = GridSearchCV(rf, param_grid, cv = 5, scoring = 'precision', n_jobs=-1)
 
 comb.fit(X_train_scaled,y_train)
 
