@@ -7,7 +7,7 @@ from kagglehub import KaggleDatasetAdapter
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, recall_score
 from sklearn.ensemble import RandomForestClassifier
 
 from sklearn.preprocessing import StandardScaler
@@ -42,11 +42,13 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(x_train)
 X_test_scaled = scaler.transform(x_test)
 
-dt = RandomForestClassifier()
+rf = RandomForestClassifier()
 
-dt.fit(X_train_scaled, y_train)
+rf.fit(X_train_scaled, y_train)
 
-y_pred = dt.predict(X_test_scaled)
+y_pred = rf.predict(X_test_scaled)
+
+rfscore = recall_score(y_true=y_test, y_pred=y_pred)
 
 cmatrix = confusion_matrix(y_test, y_pred)
 labels = np.unique(y_test)
@@ -58,9 +60,6 @@ plt.xlabel("Etiqueta Predicha")
 plt.ylabel("Etiqueta Verdadera")
 plt.show()
 
-print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(dt.score(X_test_scaled, y_test))) 
-
-print(cmatrix)
+print('Recall de RandomForest sobre el conjunto de prueba es: {:.2f}'.format(rfscore)) 
 
 print(classification_report(y_test, y_pred))
-print(X_resampled.columns)

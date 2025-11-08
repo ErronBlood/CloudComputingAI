@@ -6,8 +6,9 @@ import kagglehub
 from kagglehub import KaggleDatasetAdapter
 
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix, classification_report, recall_score
+
+
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
@@ -42,7 +43,7 @@ X_train_scaled = scaler.fit_transform(x_train)
 X_test_scaled = scaler.transform(x_test)
 
 # Mejores parametros encontrados
-lr = LogisticRegression(C=0.0001 ,max_iter=3000, penalty='l1', solver='liblinear')
+lr = LogisticRegression(C=0.00001 ,max_iter=500, penalty='l2', solver='liblinear')
 
 lr.fit(X_train_scaled, y_train)
 
@@ -58,9 +59,6 @@ plt.xlabel("Etiqueta Predicha")
 plt.ylabel("Etiqueta Verdadera")
 plt.show()
 
-print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(lr.score(X_test_scaled, y_test))) 
-
-print(cmatrix)
+print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(recall_score(y_true= y_test, y_pred= y_pred))) 
 
 print(classification_report(y_test, y_pred))
-print(X_resampled.columns)

@@ -51,7 +51,7 @@ param_grid = {
 
 rf = RandomForestClassifier()
 
-comb = GridSearchCV(rf, param_grid, cv = 5, scoring = 'precision', n_jobs=-1)
+comb = GridSearchCV(rf, param_grid, cv = 5, scoring = 'recall', n_jobs=-1)
 
 comb.fit(X_train_scaled,y_train)
 

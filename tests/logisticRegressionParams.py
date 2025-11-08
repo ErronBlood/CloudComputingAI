@@ -27,7 +27,7 @@ df1 = df1.drop(columns=['vm_id', 'timestamp', 'task_type', 'task_priority', 'tas
 X = df1.drop(columns=['Anomaly status'])
 y = df1['Anomaly status']
 
-# Apply SMOTE
+
 smote = SMOTE(random_state=42)
 X_resampled, y_resampled = smote.fit_resample(X, y)
 
@@ -45,12 +45,11 @@ param_grid = {
     'C': [0.00001, 0.0001, 0.001],  # Regularization strength
     'penalty': ['l1', 'l2', 'elasticnet'],  # Regularization type
     'solver': ['liblinear', 'saga'],  # Optimization algorithm
-    'class_weight': [None],  # Handle any remaining imbalance
     'max_iter': [1000, 1500,2000]  # Maximum iterations
 }
 
 lr = LogisticRegression()
-comb = GridSearchCV(lr, param_grid, cv = 5, scoring = 'recall')
+comb = GridSearchCV(lr, param_grid, cv = 5, scoring = 'recall', n_jobs=-1)
 
 comb.fit(X_train_scaled,y_train)
 

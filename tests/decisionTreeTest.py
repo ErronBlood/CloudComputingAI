@@ -7,7 +7,7 @@ from kagglehub import KaggleDatasetAdapter
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, recall_score
 from sklearn import tree
 
 from sklearn.preprocessing import StandardScaler
@@ -43,7 +43,7 @@ X_train_scaled = scaler.fit_transform(x_train)
 X_test_scaled = scaler.transform(x_test)
 
 #Mejores parametros encontrados
-dt = tree.DecisionTreeClassifier(criterion='entropy', max_depth=10, min_samples_leaf=50, splitter='best')
+dt = tree.DecisionTreeClassifier(criterion='entropy', max_depth=23, min_samples_leaf=75, min_samples_split=10, splitter='random')
 
 dt.fit(X_train_scaled, y_train)
 
@@ -51,6 +51,9 @@ y_pred = dt.predict(X_test_scaled)
 
 cmatrix = confusion_matrix(y_test, y_pred)
 labels = np.unique(y_test)
+
+score = recall_score(y_true= y_test, y_pred=y_pred)
+
 df_cm = pd.DataFrame(cmatrix, index=labels, columns=labels)
 plt.figure(figsize=(8, 6))
 sns.heatmap(df_cm, annot=True, cmap='Blues', fmt='d')
@@ -59,7 +62,7 @@ plt.xlabel("Etiqueta Predicha")
 plt.ylabel("Etiqueta Verdadera")
 plt.show()
 
-print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(dt.score(X_test_scaled, y_test))) 
+print('Recall de DecisionTree sobre el conjunto de prueba es: {:.2f}'.format(score)) 
 
 print(cmatrix)
 

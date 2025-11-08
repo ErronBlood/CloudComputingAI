@@ -7,7 +7,7 @@ from kagglehub import KaggleDatasetAdapter
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, recall_score
 from sklearn import tree
 
 from sklearn.preprocessing import StandardScaler
@@ -44,13 +44,14 @@ X_test_scaled = scaler.transform(x_test)
 
 param_grid = {
     'criterion': ['entropy'],  # Regularization strength
-    'splitter': ['best', 'random'],  # Regularization type
+    'splitter': ['best', 'random'],
+    'min_samples_split' : [2,4,8,10],  # Regularization type
     'max_depth': [20,23,26,29],  # Optimization algorithm  
     'min_samples_leaf': [50,75]  # Maximum iterations
 }
 
 dt = tree.DecisionTreeClassifier()
-comb = GridSearchCV(dt, param_grid, cv = 5, scoring = 'precision', n_jobs=-1)
+comb = GridSearchCV(dt, param_grid, cv = 5, scoring = 'recall', n_jobs=-1)
 
 comb.fit(X_train_scaled,y_train)
 
@@ -61,7 +62,9 @@ bestComb = comb.best_estimator_
 
 y_pred = bestComb.predict(X_test_scaled)
 
-print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(bestComb.score(X_test_scaled, y_test))) 
+dt_score = recall_score(y_true=y_test, y_pred= y_pred)
+
+print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(dt_score)) 
 cmatrix = confusion_matrix(y_test, y_pred)
 print(cmatrix)
 
