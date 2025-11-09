@@ -1,18 +1,29 @@
+#Modelos
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn import tree
+
+#Metricas
+
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report, recall_score
+
+#Ajuste de datos
+
+from sklearn.preprocessing import StandardScaler
+from imblearn.over_sampling import SMOTE
+
+#Utilidades
+
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import kagglehub
 from kagglehub import KaggleDatasetAdapter
-
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report, recall_score
-from sklearn import tree
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from imblearn.over_sampling import SMOTE
 
 df = kagglehub.dataset_load(
   KaggleDatasetAdapter.PANDAS,
@@ -42,29 +53,29 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(x_train)
 X_test_scaled = scaler.transform(x_test)
 
+mlp = MLPClassifier()
+
 param_grid = {
-    'criterion': ['entropy'],  # Regularization strength
-    'splitter': ['best', 'random'],
-    'min_samples_split' : [2,4,8,10],  # Regularization type
-    'max_depth': [20,23,26,29],  # Optimization algorithm  
-    'min_samples_leaf': [50,75]  # Maximum iterations
+    'n_estimators': [125,150,175],
+    'criterion': ['gini','entropy'],  # Regularization strength
+    'max_depth': [None,10,20],  # Optimization algorithm  
+    'min_samples_leaf': [25,50]  # Maximum iterations
 }
 
-dt = tree.DecisionTreeClassifier()
-comb = GridSearchCV(dt, param_grid, cv = 5, scoring = 'recall', n_jobs=-1)
+comb = GridSearchCV(mlp, param_grid, cv = 5, scoring = 'recall', n_jobs=-1)
 
 comb.fit(X_train_scaled,y_train)
 
-print("Mejor combinacion de parametros:", comb.best_params_)
-print("Puntaje de mejores parametros: ", comb.best_score_)
+print("Mejor combinacion de parametros: {:.2}".format(comb.best_params_))
+print("Puntaje de mejores parametros: {:.2}".format(comb.best_score_))
 
 bestComb = comb.best_estimator_
 
 y_pred = bestComb.predict(X_test_scaled)
 
-dt_score = recall_score(y_true=y_test, y_pred= y_pred)
+rf_score = recall_score(y_true=y_test, y_pred= y_pred)
 
-print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(dt_score)) 
+print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(rf_score)) 
 cmatrix = confusion_matrix(y_test, y_pred)
 print(cmatrix)
 

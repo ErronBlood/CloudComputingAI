@@ -1,18 +1,29 @@
+#Modelos
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn import tree
+
+#Metricas
+
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report, recall_score
+
+#Ajuste de datos
+
+from sklearn.preprocessing import StandardScaler
+from imblearn.over_sampling import SMOTE
+
+#Utilidades
+
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import kagglehub
 from kagglehub import KaggleDatasetAdapter
-
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report, recall_score
-from sklearn import tree
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from imblearn.over_sampling import SMOTE
 
 df = kagglehub.dataset_load(
   KaggleDatasetAdapter.PANDAS,
@@ -42,29 +53,34 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(x_train)
 X_test_scaled = scaler.transform(x_test)
 
-#Mejores parametros encontrados
-dt = tree.DecisionTreeClassifier(criterion='entropy', max_depth=23, min_samples_leaf=75, min_samples_split=10, splitter='random')
+#Seleccion e instanciacion del modelo
+# Penalty = l2
+# C = 1.0
+# solver = lbfgs
+# Max_iter = 100
+lr = LogisticRegression()
 
-dt.fit(X_train_scaled, y_train)
+#Entrenamiento del modelo con banco de entrenamieno escalado
+lr.fit(X_train_scaled, y_train)
 
-y_pred = dt.predict(X_test_scaled)
+#Realizacion de predicciones con datos de entrenamiento y prueba
+y_pred_train = lr.predict(X_train_scaled)
+y_pred_test = lr.predict(X_test_scaled)
 
-cmatrix = confusion_matrix(y_test, y_pred)
+#Calculo de porcentaje de recall para ambas predicciones
+lr_train_recall= recall_score(y_true= y_train, y_pred = y_pred_train) * 100
+lr_test_recall = recall_score(y_true= y_test, y_pred = y_pred_test) * 100
+
+print('Sensibilidad a datos de entrenamiento: {:.2f}'.format(lr_train_recall))
+print('Sensibilidad a datos de prueba: {:.2f}\n'.format(lr_test_recall))
+print(classification_report(y_test, y_pred_test))
+
+cmatrix = confusion_matrix(y_test, y_pred_test)
 labels = np.unique(y_test)
-
-score = recall_score(y_true= y_test, y_pred=y_pred)
-
 df_cm = pd.DataFrame(cmatrix, index=labels, columns=labels)
 plt.figure(figsize=(8, 6))
 sns.heatmap(df_cm, annot=True, cmap='Blues', fmt='d')
-plt.title("Matriz de Confusión")
+plt.title("Matriz de Confusión para Datos de Prueba")
 plt.xlabel("Etiqueta Predicha")
 plt.ylabel("Etiqueta Verdadera")
 plt.show()
-
-print('Recall de DecisionTree sobre el conjunto de prueba es: {:.2f}'.format(score)) 
-
-print(cmatrix)
-
-print(classification_report(y_test, y_pred))
-print(X_resampled.columns)

@@ -1,18 +1,29 @@
+#Modelos
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn import tree
+
+#Metricas
+
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report, recall_score
+
+#Ajuste de datos
+
+from sklearn.preprocessing import StandardScaler
+from imblearn.over_sampling import SMOTE
+
+#Utilidades
+
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import kagglehub
 from kagglehub import KaggleDatasetAdapter
-
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import confusion_matrix, classification_report, recall_score
-
-
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from imblearn.over_sampling import SMOTE
 
 df = kagglehub.dataset_load(
   KaggleDatasetAdapter.PANDAS,
@@ -42,15 +53,18 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(x_train)
 X_test_scaled = scaler.transform(x_test)
 
-# Mejores parametros encontrados
-lr = LogisticRegression(C=0.00001 ,max_iter=500, penalty='l2', solver='liblinear')
+#Mejores parametros encontrados
+dt = tree.DecisionTreeClassifier(criterion='entropy', max_depth=23, min_samples_leaf=75, min_samples_split=10, splitter='random')
 
-lr.fit(X_train_scaled, y_train)
+dt.fit(X_train_scaled, y_train)
 
-y_pred = lr.predict(X_test_scaled)
+y_pred = dt.predict(X_test_scaled)
 
 cmatrix = confusion_matrix(y_test, y_pred)
 labels = np.unique(y_test)
+
+dtscore = recall_score(y_true= y_test, y_pred=y_pred)
+
 df_cm = pd.DataFrame(cmatrix, index=labels, columns=labels)
 plt.figure(figsize=(8, 6))
 sns.heatmap(df_cm, annot=True, cmap='Blues', fmt='d')
@@ -59,6 +73,6 @@ plt.xlabel("Etiqueta Predicha")
 plt.ylabel("Etiqueta Verdadera")
 plt.show()
 
-print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(recall_score(y_true= y_test, y_pred= y_pred))) 
+print('Recall de DecisionTree sobre el conjunto de prueba es: {:.2f}'.format(dtscore)) 
 
 print(classification_report(y_test, y_pred))

@@ -1,18 +1,29 @@
+#Modelos
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn import tree
+
+#Metricas
+
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report, recall_score
+
+#Ajuste de datos
+
+from sklearn.preprocessing import StandardScaler
+from imblearn.over_sampling import SMOTE
+
+#Utilidades
+
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import kagglehub
 from kagglehub import KaggleDatasetAdapter
-
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
-from sklearn.ensemble import RandomForestClassifier
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from imblearn.over_sampling import SMOTE
 
 df = kagglehub.dataset_load(
   KaggleDatasetAdapter.PANDAS,
@@ -42,29 +53,24 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(x_train)
 X_test_scaled = scaler.transform(x_test)
 
-param_grid = {
-    'n_estimators': [None,125,150,175],
-    'criterion': ['gini','entropy'],  # Regularization strength
-    'max_depth': [None,10,20],  # Optimization algorithm  
-    'min_samples_leaf': [25,50]  # Maximum iterations
-}
+mlp = MLPClassifier
 
-rf = RandomForestClassifier()
+mlp.fit(X_train_scaled, y_train)
 
-comb = GridSearchCV(rf, param_grid, cv = 5, scoring = 'recall', n_jobs=-1)
+y_pred = mlp.predict(X_test_scaled)
 
-comb.fit(X_train_scaled,y_train)
+mlpscore = recall_score(y_true=y_test, y_pred=y_pred)
 
-print("Mejor combinacion de parametros:", comb.best_params_)
-print("Puntaje de mejores parametros: ", comb.best_score_)
-
-bestComb = comb.best_estimator_
-
-y_pred = bestComb.predict(X_test_scaled)
-
-print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(bestComb.score(X_test_scaled, y_test))) 
 cmatrix = confusion_matrix(y_test, y_pred)
-print(cmatrix)
+labels = np.unique(y_test)
+df_cm = pd.DataFrame(cmatrix, index=labels, columns=labels)
+plt.figure(figsize=(8, 6))
+sns.heatmap(df_cm, annot=True, cmap='Blues', fmt='d')
+plt.title("Matriz de Confusión")
+plt.xlabel("Etiqueta Predicha")
+plt.ylabel("Etiqueta Verdadera")
+plt.show()
+
+print('Recall de RandomForest sobre el conjunto de prueba es: {:.2f}'.format(mlpscore)) 
 
 print(classification_report(y_test, y_pred))
-print(X_resampled.columns)
