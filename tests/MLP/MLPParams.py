@@ -7,7 +7,7 @@ from sklearn import tree
 
 #Metricas
 
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report, recall_score
 
@@ -71,11 +71,11 @@ param_grid = {
 
 }
 
-comb = GridSearchCV(mlp, param_grid, cv = 5, scoring = 'recall', n_jobs=-1)
+comb = RandomizedSearchCV(mlp, param_grid, cv = 5, scoring = 'recall', n_jobs=-1, n_iter=20, random_state=42, verbose=2)
 
 comb.fit(X_train_scaled,y_train)
 
-print("Mejor combinacion de parametros: {:.2}".format(comb.best_params_))
+print("Mejor combinacion de parametros: {:}".format(comb.best_params_))
 print("Puntaje de mejores parametros: {:.2}".format(comb.best_score_))
 
 bestComb = comb.best_estimator_
