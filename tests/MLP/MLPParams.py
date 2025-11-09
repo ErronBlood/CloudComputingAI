@@ -56,10 +56,19 @@ X_test_scaled = scaler.transform(x_test)
 mlp = MLPClassifier()
 
 param_grid = {
-    'n_estimators': [125,150,175],
-    'criterion': ['gini','entropy'],  # Regularization strength
-    'max_depth': [None,10,20],  # Optimization algorithm  
-    'min_samples_leaf': [25,50]  # Maximum iterations
+    'hidden_layer_sizes': [(50,50),
+                           (100,50),
+                           (150),
+                           (100,100),
+                           (200)],
+    'activation': ['relu','tanh'],  # Regularization strength
+    'solver': ['lbfgs', 'sgd', 'adam'],  # Optimization algorithm  
+    'alpha': [0.00001, 0.001, 0.0001, 0.01],
+    'learning_rate' : ['constant', 'adaptive'],
+    'learning_rate_init' : [0.0001, 0.001, 0.01],
+    'max_iter' : [100, 200, 300],
+    'early_stopping' : [False, True],
+
 }
 
 comb = GridSearchCV(mlp, param_grid, cv = 5, scoring = 'recall', n_jobs=-1)
