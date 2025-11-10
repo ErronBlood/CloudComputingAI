@@ -59,10 +59,10 @@ dt = tree.DecisionTreeClassifier()
 
 param_grid = {
     'criterion': ['entropy'],  # Regularization strength
-    'splitter': ['best', 'random'],
-    'min_samples_split' : [2,4,8,10],  # Regularization type
-    'max_depth': [20,23,26,29],  # Optimization algorithm  
-    'min_samples_leaf': [50,75]  # Maximum iterations
+    'splitter': ['random'],
+    'min_samples_split' : [8,10,12,14],  # Regularization type
+    'max_depth': [23],  # Optimization algorithm  
+    'min_samples_leaf': [75,100]  # Maximum iterations
 }
 
 # Se realiza la busqueda de parametros con GridSearchCV, juzgando por la estadistica de sensibilidad

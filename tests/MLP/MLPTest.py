@@ -53,7 +53,7 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(x_train)
 X_test_scaled = scaler.transform(x_test)
 
-mlp = MLPClassifier()
+mlp = MLPClassifier(solver = 'adam', max_iter = 1000, learning_rate_init= 0.1, learning_rate= 'adaptive', hidden_layer_sizes= (50, 50, 50), early_stopping= False, alpha= 0.001, activation= 'relu')
 
 mlp.fit(X_train_scaled, y_train)
 

@@ -56,18 +56,16 @@ X_test_scaled = scaler.transform(x_test)
 mlp = MLPClassifier()
 
 param_grid = {
-    'hidden_layer_sizes': [(50,50),
+    'hidden_layer_sizes': [(50,50,50),
                            (100,50),
-                           (150),
-                           (100,100),
-                           (200)],
+                           (150)],
     'activation': ['relu','tanh'],  # Regularization strength
     'solver': ['lbfgs', 'sgd', 'adam'],  # Optimization algorithm  
-    'alpha': [0.00001, 0.001, 0.0001, 0.01],
+    'alpha': [0.001],
     'learning_rate' : ['constant', 'adaptive'],
-    'learning_rate_init' : [0.0001, 0.001, 0.01],
-    'max_iter' : [100, 200, 300],
-    'early_stopping' : [False, True],
+    'learning_rate_init' : [0.01, 0.1, 1],
+    'max_iter' : [800, 900, 1000],
+    'early_stopping' : [False]
 
 }
 
