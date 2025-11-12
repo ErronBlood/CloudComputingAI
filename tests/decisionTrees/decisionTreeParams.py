@@ -9,7 +9,7 @@ from sklearn import tree
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report, recall_score
+from sklearn.metrics import classification_report, f1_score
 
 #Ajuste de datos
 
@@ -58,26 +58,26 @@ dt = tree.DecisionTreeClassifier()
 # Definicmos los valores posibles para los hiperparametros
 
 param_grid = {
-    'criterion': ['entropy'],  # Regularization strength
-    'splitter': ['random'],
+    'criterion': ['entropy', 'gini'],  # Regularization strength
+    'splitter': ['random','best'],
     'min_samples_split' : [8,10,12,14],  # Regularization type
-    'max_depth': [23],  # Optimization algorithm  
-    'min_samples_leaf': [75,100]  # Maximum iterations
+    'max_depth': [17,20,23,26,29],  # Optimization algorithm  
+    'min_samples_leaf': [25,50,75,100]  # Maximum iterations
 }
 
 # Se realiza la busqueda de parametros con GridSearchCV, juzgando por la estadistica de sensibilidad
-comb = GridSearchCV(dt, param_grid, cv = 5, scoring = 'recall', n_jobs=-1)
+comb = GridSearchCV(dt, param_grid, cv = 5, scoring = 'f1', n_jobs=-1)
 
 comb.fit(X_train_scaled,y_train)
 
-print("Mejor combinacion de parametros: {:.2}".format(comb.best_params_))
+print("Mejor combinacion de parametros: {:}".format(comb.best_params_))
 print("Puntaje de mejores parametros: {:.2}".format(comb.best_score_))
 
 bestComb = comb.best_estimator_
 
 y_pred = bestComb.predict(X_test_scaled)
 
-dt_score = recall_score(y_true=y_test, y_pred= y_pred)
+dt_score = f1_score(y_true=y_test, y_pred= y_pred)
 
 print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(dt_score)) 
 cmatrix = confusion_matrix(y_test, y_pred)

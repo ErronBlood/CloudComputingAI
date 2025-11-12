@@ -9,34 +9,7 @@ from sklearn import tree
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report, recall_score
-
-#Ajuste de datos
-
-from sklearn.preprocessing import StandardScaler
-from imblearn.over_sampling import SMOTE
-
-#Utilidades
-
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-import numpy as np
-import kagglehub
-from kagglehub import KaggleDatasetAdapter
-
-#Modelos
-
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neural_network import MLPClassifier
-from sklearn import tree
-
-#Metricas
-
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report, recall_score
+from sklearn.metrics import classification_report, f1_score
 
 #Ajuste de datos
 
@@ -91,11 +64,11 @@ y_pred_train = mlp.predict(X_train_scaled)
 y_pred_test = mlp.predict(X_test_scaled)
 
 #Calculo de porcentaje de recall para ambas predicciones
-mlp_train_recall= recall_score(y_true= y_train, y_pred = y_pred_train) * 100
-mlp_test_recall = recall_score(y_true= y_test, y_pred = y_pred_test) * 100
+mlp_train_f1= f1_score(y_true= y_train, y_pred = y_pred_train) * 100
+mlp_test_f1 = f1_score(y_true= y_test, y_pred = y_pred_test) * 100
 
-print('Sensibilidad a datos de entrenamiento: {:.2f}'.format(mlp_train_recall))
-print('Sensibilidad a datos de prueba: {:.2f}\n'.format(mlp_test_recall))
+print('Sensibilidad a datos de entrenamiento: {:.2f}'.format(mlp_train_f1))
+print('Sensibilidad a datos de prueba: {:.2f}\n'.format(mlp_test_f1))
 print(classification_report(y_test, y_pred_test))
 
 cmatrix = confusion_matrix(y_test, y_pred_test)

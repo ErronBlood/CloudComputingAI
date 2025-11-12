@@ -9,7 +9,7 @@ from sklearn import tree
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report, recall_score
+from sklearn.metrics import classification_report, f1_score
 
 #Ajuste de datos
 
@@ -64,7 +64,7 @@ param_grid = {
 lr = LogisticRegression()
 
 # Se realiza la busqueda de parametros con GridSearchCV, juzgando por la estadistica de sensibilidad
-comb = GridSearchCV(lr, param_grid, cv = 5, scoring = 'recall', n_jobs=-1)
+comb = GridSearchCV(lr, param_grid, cv = 5, scoring = 'f1', n_jobs=-1)
 
 comb.fit(X_train_scaled,y_train)
 
@@ -75,7 +75,7 @@ bestComb = comb.best_estimator_
 
 y_pred = bestComb.predict(X_test_scaled)
 
-dt_score = recall_score(y_true=y_test, y_pred= y_pred)
+dt_score = f1_score(y_true=y_test, y_pred= y_pred)
 
 print('Accuracy de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(dt_score)) 
 cmatrix = confusion_matrix(y_test, y_pred)

@@ -9,7 +9,7 @@ from sklearn import tree
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report, recall_score
+from sklearn.metrics import classification_report, f1_score
 
 #Ajuste de datos
 
@@ -64,13 +64,13 @@ y_pred_train = rf.predict(X_train_scaled)
 y_pred_test = rf.predict(X_test_scaled)
 
 #Calculo de porcentaje de recall para ambas predicciones
-rf_train_recall= recall_score(y_true= y_train, y_pred = y_pred_train) * 100
-rf_test_recall = recall_score(y_true= y_test, y_pred = y_pred_test) * 100
+rf_train_f1= f1_score(y_true= y_train, y_pred = y_pred_train) * 100
+rf_test_f1 = f1_score(y_true= y_test, y_pred = y_pred_test) * 100
 
-rfscore = recall_score(y_true=y_test, y_pred=y_pred)
+rfscore = f1_score(y_true=y_test, y_pred=y_pred)
 
-print('Sensibilidad a datos de entrenamiento: {:.2f}'.format(rf_train_recall))
-print('Sensibilidad a datos de prueba: {:.2f}\n'.format(rf_test_recall))
+print('Sensibilidad a datos de entrenamiento: {:.2f}'.format(rf_train_f1))
+print('Sensibilidad a datos de prueba: {:.2f}\n'.format(rf_test_f1))
 print(classification_report(y_test, y_pred_test))
 
 cmatrix = confusion_matrix(y_test, y_pred_test)

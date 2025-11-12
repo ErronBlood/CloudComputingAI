@@ -9,7 +9,7 @@ from sklearn import tree
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report, recall_score
+from sklearn.metrics import classification_report, f1_score
 
 #Ajuste de datos
 
@@ -59,7 +59,7 @@ mlp.fit(X_train_scaled, y_train)
 
 y_pred = mlp.predict(X_test_scaled)
 
-mlpscore = recall_score(y_true=y_test, y_pred=y_pred)
+mlpscore = f1_score(y_true=y_test, y_pred=y_pred)
 
 cmatrix = confusion_matrix(y_test, y_pred)
 labels = np.unique(y_test)
@@ -71,6 +71,6 @@ plt.xlabel("Etiqueta Predicha")
 plt.ylabel("Etiqueta Verdadera")
 plt.show()
 
-print('Recall de RandomForest sobre el conjunto de prueba es: {:.2f}'.format(mlpscore)) 
+print('F1 de RandomForest sobre el conjunto de prueba es: {:.2f}'.format(mlpscore)) 
 
 print(classification_report(y_test, y_pred))

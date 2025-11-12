@@ -9,7 +9,7 @@ from sklearn import tree
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report, recall_score
+from sklearn.metrics import classification_report, f1_score
 
 #Ajuste de datos
 
@@ -38,28 +38,29 @@ df1 = df1.drop(columns=['vm_id', 'timestamp', 'task_type', 'task_priority', 'tas
 X = df1.drop(columns=['Anomaly status'])
 y = df1['Anomaly status']
 
+dfResampled = pd.DataFrame(X, columns=X.columns)
+dfResampled['Anomaly status'] = y
+
+x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+
 # Apply SMOTE
 smote = SMOTE(random_state=42)
-X_resampled, y_resampled = smote.fit_resample(X, y)
+x_trainR, y_trainR = smote.fit_resample(x_train, y_train)
 
 # Recreate the balanced dataframe
-dfResampled = pd.DataFrame(X_resampled, columns=X.columns)
-dfResampled['Anomaly status'] = y_resampled
-
-x_train, x_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.20)
 
 scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(x_train)
+X_train_scaled = scaler.fit_transform(x_trainR)
 X_test_scaled = scaler.transform(x_test)
 
 # Mejores parametros encontrados
 lr = LogisticRegression(C=0.00001 ,max_iter=500, penalty='l2', solver='liblinear')
 
-lr.fit(X_train_scaled, y_train)
+lr.fit(X_train_scaled, y_trainR)
 
 y_pred = lr.predict(X_test_scaled)
 
-lrscore = recall_score(y_true= y_test, y_pred= y_pred)
+lrscore = f1_score(y_true= y_test, y_pred= y_pred)
 
 cmatrix = confusion_matrix(y_test, y_pred)
 labels = np.unique(y_test)
@@ -71,6 +72,6 @@ plt.xlabel("Etiqueta Predicha")
 plt.ylabel("Etiqueta Verdadera")
 plt.show()
 
-print('Recall de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(lrscore)) 
+print('el F1 de LogisticRegression sobre el conjunto de prueba es: {:.2f}'.format(lrscore)) 
 
 print(classification_report(y_test, y_pred))
